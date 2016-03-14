@@ -23,6 +23,16 @@ public class Vector
         y += vector.getY();
     }
 
+    public void addX(double x)
+    {
+        this.x += x;
+    }
+
+    public void addY(double y)
+    {
+        this.y += y;
+    }
+
     public void scale(double scale)
     {
         x *= scale;

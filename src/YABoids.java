@@ -1,16 +1,23 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 public class YABoids extends Application
 {
+    boolean running = true;
+
+    long then;
+
     Board board;
 
     Stage primaryStage;
@@ -19,6 +26,7 @@ public class YABoids extends Application
     VBox toolbar;
 
     Canvas canvas;
+    GraphicsContext gc;
 
     //public static void main(String[] args)
     //{
@@ -32,10 +40,13 @@ public class YABoids extends Application
 
     public void init()
     {
-        System.out.println("Hello World!");
         board = new Board(750, 600);
-        board.addBoid(new Boid(100, 100, board.getBoids()));
-        board.addBoid(new Boid(150, 150, board.getBoids()));
+
+        for (int i = 0; i < 100; i++)
+        {
+            board.addBoid(new Boid(board.getWidth() * Math.random(), board.getHeight() * Math.random(), board.getBoids()));
+        }
+
     }
 
     @Override
@@ -43,7 +54,6 @@ public class YABoids extends Application
     {
         this.primaryStage = primaryStage;
         initGui();
-
     }
 
     void initGui()
@@ -54,7 +64,6 @@ public class YABoids extends Application
         initToolbar();
 
         HBox root = new HBox(0, canvas, toolbar);
-        //root.setPrefWidth(900);
         root.setStyle("-fx-background-color: #FF00FF;");
 
         primaryScene = new Scene(root);
@@ -63,35 +72,85 @@ public class YABoids extends Application
 
         drawBoids();
 
-        primaryStage.setResizable(false);
+        //primaryStage.setResizable(false);
+
+        // Workaround, see: https://stackoverflow.com/questions/20732100/javafx-why-does-stage-setresizablefalse-cause-additional-margins
+        primaryStage.sizeToScene();
 
         primaryStage.show();
+
+        new AnimationTimer()
+        {
+            @Override
+            public void handle(long now)
+            {
+                if (then == 0)
+                {
+                    then = now;
+                    return;
+                }
+
+                //System.out.println(now - then);
+                then = now;
+
+                if (running)
+                {
+                    tick();
+                }
+            }
+        }.start();
 
     }
 
     void initToolbar()
     {
-        toolbar = new VBox(0);
+        toolbar = new VBox(20);
+
+        toolbar.setPadding(new Insets(20));
+        toolbar.setAlignment(Pos.TOP_CENTER);
+        toolbar.setPrefWidth(250);
+        toolbar.setStyle("-fx-background-color: #EEEEEE;");
+
+        Button b_tick = new Button("tick()");
+        b_tick.setOnAction(event -> tick());
+        toolbar.getChildren().add(b_tick);
 
         toolbar.getChildren().add(new Label("Test!"));
+        toolbar.getChildren().add(new Label("Test!"));
 
-        toolbar.setPrefWidth(250);
-        toolbar.setStyle("-fx-background-color: #FFFF00;");
     }
 
     void drawBoids()
     {
-        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         board.getBoids().forEach(this::drawBoid);
     }
 
     void initCanvas()
     {
         canvas = new Canvas(board.getWidth(), board.getHeight());
+
+        gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     void drawBoid(Boid boid)
     {
-        canvas.getGraphicsContext2D().fillOval(boid.getX(), boid.getY(), 10, 10);
+        boid.move();
+        gc.setFill(Color.GREEN);
+        gc.fillOval(boid.getX() - 10, boid.getY() - 10, 20, 20);
     }
+
+    void tick()
+    {
+        long start = System.currentTimeMillis();
+        board.moveBoids();
+        drawBoids();
+        System.out.println(System.currentTimeMillis() - start);
+    }
+
 }
