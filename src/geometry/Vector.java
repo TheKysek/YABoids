@@ -11,6 +11,12 @@ public class Vector
         this.y = y;
     }
 
+    public Vector(Vector vector)
+    {
+        x = vector.getX();
+        y = vector.getY();
+    }
+
     public Vector()
     {
         x = 0;
@@ -45,6 +51,11 @@ public class Vector
         {
             scale(maxLength / getLength());
         }
+    }
+
+    public void forceLength(double length)
+    {
+        scale(length / getLength());
     }
 
     public double getX()

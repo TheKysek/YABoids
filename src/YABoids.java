@@ -14,24 +14,18 @@ import javafx.stage.Stage;
 
 public class YABoids extends Application
 {
-    boolean running = true;
+    private boolean running = true;
 
-    long then;
+    private long then;
 
-    Board board;
+    private Board board;
 
-    Stage primaryStage;
-    Scene primaryScene;
+    private Stage primaryStage;
 
-    VBox toolbar;
+    private VBox toolbar;
 
-    Canvas canvas;
-    GraphicsContext gc;
-
-    //public static void main(String[] args)
-    //{
-    //    System.out.println("Hello World!");
-    //}
+    private Canvas canvas;
+    private GraphicsContext gc;
 
     public static void main(String[] args)
     {
@@ -40,7 +34,7 @@ public class YABoids extends Application
 
     public void init()
     {
-        board = new Board(750, 600);
+        board = new Board(1800, 960);
 
         for (int i = 0; i < 100; i++)
         {
@@ -56,17 +50,17 @@ public class YABoids extends Application
         initGui();
     }
 
-    void initGui()
+    private void initGui()
     {
         primaryStage.setTitle("YABoids");
 
         initCanvas();
-        initToolbar();
+        //initToolbar();
 
-        HBox root = new HBox(0, canvas, toolbar);
+        HBox root = new HBox(0, canvas);
         root.setStyle("-fx-background-color: #FF00FF;");
 
-        primaryScene = new Scene(root);
+        Scene primaryScene = new Scene(root);
 
         primaryStage.setScene(primaryScene);
 
@@ -102,7 +96,7 @@ public class YABoids extends Application
 
     }
 
-    void initToolbar()
+    private void initToolbar()
     {
         toolbar = new VBox(20);
 
@@ -120,7 +114,7 @@ public class YABoids extends Application
 
     }
 
-    void drawBoids()
+    private void drawBoids()
     {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -129,7 +123,7 @@ public class YABoids extends Application
         board.getBoids().forEach(this::drawBoid);
     }
 
-    void initCanvas()
+    private void initCanvas()
     {
         canvas = new Canvas(board.getWidth(), board.getHeight());
 
@@ -138,14 +132,14 @@ public class YABoids extends Application
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    void drawBoid(Boid boid)
+    private void drawBoid(Boid boid)
     {
-        boid.move();
+        boid.updateNextVelocity();
         gc.setFill(Color.GREEN);
         gc.fillOval(boid.getX() - 10, boid.getY() - 10, 20, 20);
     }
 
-    void tick()
+    private void tick()
     {
         long start = System.currentTimeMillis();
         board.moveBoids();
