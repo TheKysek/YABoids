@@ -1,40 +1,66 @@
 import java.util.HashSet;
 import java.util.Set;
 
-public class Board
+class Board
 {
+    private static final double MARGIN = 20;
+    private static final double REPEL_FORCE = 2;
+
     private Set<Boid> boids = new HashSet<>();
 
     private double width;
     private double height;
 
-    public Board(double width, double height)
+    Board(double width, double height)
     {
         this.width = width;
         this.height = height;
     }
 
-    public double getWidth()
+    double getWidth()
     {
         return width;
     }
 
-    public double getHeight()
+    double getHeight()
     {
         return height;
     }
 
-    public Set<Boid> getBoids()
+    Set<Boid> getBoids()
     {
         return boids;
     }
 
-    public void moveBoids()
+    void moveBoids()
     {
         boids.forEach(Boid::move);
+
+        for (Boid boid : boids)
+        {
+            if (boid.getX() < MARGIN)
+            {
+                boid.getVelocity().addX(REPEL_FORCE);
+            }
+
+            if (boid.getY() < MARGIN)
+            {
+                boid.getVelocity().addY(REPEL_FORCE);
+            }
+
+            if (boid.getX() > width - MARGIN)
+            {
+                boid.getVelocity().addX(-REPEL_FORCE);
+            }
+
+            if (boid.getY() > height - MARGIN)
+            {
+                boid.getVelocity().addY(-REPEL_FORCE);
+            }
+        }
     }
 
-    public void addBoid(Boid boid)
+    void addBoid(Boid boid)
     {
         boids.add(boid);
     }

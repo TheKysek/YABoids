@@ -53,10 +53,10 @@ public class Vector
         }
     }
 
-    public void forceLength(double length)
-    {
-        scale(length / getLength());
-    }
+    //public void forceLength(double length)
+    //{
+        //scale(length / getLength());
+    //}
 
     public double getX()
     {

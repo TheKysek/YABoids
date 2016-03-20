@@ -134,7 +134,6 @@ public class YABoids extends Application
 
     private void drawBoid(Boid boid)
     {
-        boid.updateNextVelocity();
         gc.setFill(Color.GREEN);
         gc.fillOval(boid.getX() - 10, boid.getY() - 10, 20, 20);
     }
