@@ -34,13 +34,7 @@ public class YABoids extends Application
 
     public void init()
     {
-        board = new Board(1800, 960);
-
-        for (int i = 0; i < 100; i++)
-        {
-            board.addBoid(new Boid(board.getWidth() * Math.random(), board.getHeight() * Math.random(), board.getBoids()));
-        }
-
+        board = new Board(1800, 960, 100);
     }
 
     @Override
@@ -121,11 +115,19 @@ public class YABoids extends Application
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         board.getBoids().forEach(this::drawBoid);
+
+        gc.setFill(Color.RED);
+        gc.fillOval(board.getScare().getX() - 10, board.getScare().getY() - 10, 20, 20);
     }
 
     private void initCanvas()
     {
         canvas = new Canvas(board.getWidth(), board.getHeight());
+
+        canvas.setOnMouseMoved(event -> {
+            board.getScare().setX(event.getX());
+            board.getScare().setY(event.getY());
+        });
 
         gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);

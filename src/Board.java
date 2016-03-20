@@ -1,3 +1,5 @@
+import geometry.Point;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,14 +9,23 @@ class Board
     private static final double REPEL_FORCE = 2;
 
     private Set<Boid> boids = new HashSet<>();
-
+    private Point scare = new Point(0, 0);
     private double width;
     private double height;
-
-    Board(double width, double height)
+    Board(double width, double height, int numOfBoids)
     {
         this.width = width;
         this.height = height;
+
+        for (int i = 0; i < numOfBoids; i++)
+        {
+            addBoid(new Boid(getWidth() * Math.random(), getHeight() * Math.random(), getBoids(), getScare()));
+        }
+    }
+
+    Point getScare()
+    {
+        return scare;
     }
 
     double getWidth()
@@ -64,4 +75,5 @@ class Board
     {
         boids.add(boid);
     }
+
 }

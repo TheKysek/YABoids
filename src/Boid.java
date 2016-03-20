@@ -9,20 +9,20 @@ class Boid
 {
     private static final double VIEW_DISTANCE = 80;
 
-    private static final double MAX_VELOCITY = 5.5;
+    private static final double MAX_VELOCITY = 5;
 
     private static final double PRESERVE_PREVIOUS_VELOCITY_MULTIPLIER = 1;
 
     private static final double COLLISION_AVOIDANCE_RADIUS = 35;
 
-    private static final double COLLISION_AVOIDANCE_MULTIPLIER = 0.1;
+    private static final double COLLISION_AVOIDANCE_MULTIPLIER = 0.15;
 
-    private static final double ALIGN_MULTIPLIER = 0.06;
+    private static final double ALIGN_MULTIPLIER = 0.12;
 
-    //private static final double TARGET_MULTIPLIER = 0.0003;
-    private static final double TARGET_MULTIPLIER = 0;
+    private static final double SCARE_MULTIPLIER = 1;
+    //private static final double TARGET_MULTIPLIER = 0;
 
-    private static final double CENTER_OF_MASS_MULTIPLIER = 0.01;
+    private static final double CENTER_OF_MASS_MULTIPLIER = 0.015;
 
     private static final double JIGGLE_MULTIPLIER = 1.4;
     private static final double JIGGLE_PROBABILITY = 0.3;
@@ -32,27 +32,19 @@ class Boid
     private Set<Boid> boids;
     private Set<Boid> boidsNearby;
 
-    private Point target = new Point(900, 480);
+    //private Point target = new Point(900, 480);
+    private Point scare;
 
     private Vector velocity;
 
-    Boid(double x, double y, Set<Boid> boids)
+    Boid(double x, double y, Set<Boid> boids, Point scare)
     {
         this.x = x;
         this.y = y;
         this.boids = boids;
+        this.scare = scare;
 
         velocity = new Vector();
-    }
-
-    public Point getTarget()
-    {
-        return target;
-    }
-
-    public void setTarget(Point target)
-    {
-        this.target = target;
     }
 
     private double distance(Boid boid)
@@ -63,7 +55,7 @@ class Boid
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    public double distance(Point point)
+    private double distance(Point point)
     {
         double dx = getX() - point.getX();
         double dy = getY() - point.getY();
@@ -76,19 +68,9 @@ class Boid
         return x;
     }
 
-    public void setX(double x)
-    {
-        this.x = x;
-    }
-
     double getY()
     {
         return y;
-    }
-
-    public void setY(double y)
-    {
-        this.y = y;
     }
 
     private void applyJiggle()
@@ -152,15 +134,11 @@ class Boid
         {
             Vector avoid = new Vector();
 
-            for (Boid boid : boidsNearby)
-            {
-                if (distance(boid) < COLLISION_AVOIDANCE_RADIUS)
-                {
-                    Vector avoidBoid = new Vector(x - boid.getX(), y - boid.getY());
-                    avoidBoid.scale((COLLISION_AVOIDANCE_RADIUS - distance(boid))/COLLISION_AVOIDANCE_RADIUS);
-                    avoid.add(avoidBoid);
-                }
-            }
+            boidsNearby.stream().filter(boid -> distance(boid) < COLLISION_AVOIDANCE_RADIUS).forEach(boid -> {
+                Vector avoidBoid = new Vector(x - boid.getX(), y - boid.getY());
+                avoidBoid.scale((COLLISION_AVOIDANCE_RADIUS - distance(boid)) / COLLISION_AVOIDANCE_RADIUS);
+                avoid.add(avoidBoid);
+            });
 
             avoid.scale(COLLISION_AVOIDANCE_MULTIPLIER);
 
@@ -170,17 +148,17 @@ class Boid
         }
     }
 
-    private void applyToTarget()
+    private void applyScare()
     {
-        if (target != null)
+        if (scare != null && distance(scare) < VIEW_DISTANCE)
         {
-            double dx = target.getX() - x;
-            double dy = target.getY() - y;
+            double dx = x - scare.getX();
+            double dy = y - scare.getY();
 
-            Vector toTarget = new Vector(dx, dy);
-            toTarget.scale(TARGET_MULTIPLIER);
+            Vector away = new Vector(dx, dy);
+            away.scale(SCARE_MULTIPLIER);
 
-            velocity.add(toTarget);
+            velocity.add(away);
         }
     }
 
@@ -194,7 +172,7 @@ class Boid
 
         velocity.scale(PRESERVE_PREVIOUS_VELOCITY_MULTIPLIER);
 
-        applyToTarget();
+        applyScare();
         applyAlign();
         applyCenterOfMass();
         applyJiggle();
