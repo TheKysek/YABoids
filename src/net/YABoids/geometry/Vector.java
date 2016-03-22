@@ -1,4 +1,4 @@
-package geometry;
+package net.YABoids.geometry;
 
 public class Vector
 {
@@ -11,12 +11,6 @@ public class Vector
         this.y = y;
     }
 
-    public Vector(Vector vector)
-    {
-        x = vector.getX();
-        y = vector.getY();
-    }
-
     public Vector()
     {
         x = 0;
@@ -27,6 +21,12 @@ public class Vector
     {
         x += vector.getX();
         y += vector.getY();
+    }
+
+    public void subtract(Vector vector)
+    {
+        x -= vector.getX();
+        y -= vector.getY();
     }
 
     public void addX(double x)
@@ -52,11 +52,6 @@ public class Vector
             scale(maxLength / getLength());
         }
     }
-
-    //public void forceLength(double length)
-    //{
-        //scale(length / getLength());
-    //}
 
     public double getX()
     {

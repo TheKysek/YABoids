@@ -1,4 +1,6 @@
-import geometry.Point;
+package net.YABoids;
+
+import net.YABoids.geometry.Point;
 
 import java.util.HashSet;
 import java.util.Set;

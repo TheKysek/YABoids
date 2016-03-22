@@ -1,4 +1,4 @@
-package geometry;
+package net.YABoids.geometry;
 
 public class Point
 {
