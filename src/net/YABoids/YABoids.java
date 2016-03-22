@@ -127,8 +127,7 @@ public class YABoids extends Application
         canvas = new Canvas(board.getWidth(), board.getHeight());
 
         canvas.setOnMouseMoved(event -> {
-            board.getScare().setX(event.getX());
-            board.getScare().setY(event.getY());
+            board.getScare().set(event.getX(), event.getY());
         });
 
         gc = canvas.getGraphicsContext2D();

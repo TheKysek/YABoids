@@ -1,7 +1,5 @@
 package net.YABoids;
 
-
-import net.YABoids.geometry.Point;
 import net.YABoids.geometry.Vector;
 
 import java.util.HashSet;
@@ -35,12 +33,11 @@ class Boid
     private Set<Boid> boids;
     private Set<Boid> boidsNearby;
 
-    //private Point target = new Point(900, 480);
-    private Point scare;
+    private Vector scare;
 
     private Vector velocity;
 
-    Boid(double x, double y, Set<Boid> boids, Point scare)
+    Boid(double x, double y, Set<Boid> boids, Vector scare)
     {
         this.x = x;
         this.y = y;
@@ -58,7 +55,7 @@ class Boid
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private double distance(Point point)
+    private double distance(Vector point)
     {
         double dx = getX() - point.getX();
         double dy = getY() - point.getY();
@@ -81,8 +78,7 @@ class Boid
         if (Math.random() < JIGGLE_PROBABILITY)
         {
             // -0.5 to also get negative numbers
-            velocity.addX((Math.random() - 0.5) * JIGGLE_MULTIPLIER);
-            velocity.addY((Math.random() - 0.5) * JIGGLE_MULTIPLIER);
+            velocity.add((Math.random() - 0.5) * JIGGLE_MULTIPLIER, (Math.random() - 0.5) * JIGGLE_MULTIPLIER);
         }
     }
 

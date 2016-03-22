@@ -23,20 +23,32 @@ public class Vector
         y += vector.getY();
     }
 
+    public void add(double x, double y)
+    {
+        this.x += x;
+        this.y += y;
+    }
+
+    public void addX(double d)
+    {
+        x += d;
+    }
+
+    public void addY(double d)
+    {
+        y += d;
+    }
+
     public void subtract(Vector vector)
     {
         x -= vector.getX();
         y -= vector.getY();
     }
 
-    public void addX(double x)
+    public void set(double x, double y)
     {
-        this.x += x;
-    }
-
-    public void addY(double y)
-    {
-        this.y += y;
+        this.x = x;
+        this.y = y;
     }
 
     public void scale(double scale)
@@ -58,9 +70,19 @@ public class Vector
         return x;
     }
 
+    public void setX(double x)
+    {
+        this.x = x;
+    }
+
     public double getY()
     {
         return y;
+    }
+
+    public void setY(double y)
+    {
+        this.y = y;
     }
 
     public double getRotationRad()

@@ -1,6 +1,6 @@
 package net.YABoids;
 
-import net.YABoids.geometry.Point;
+import net.YABoids.geometry.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,9 +11,10 @@ class Board
     private static final double REPEL_FORCE = 2;
 
     private Set<Boid> boids = new HashSet<>();
-    private Point scare = new Point(0, 0);
+    private Vector scare = new Vector();
     private double width;
     private double height;
+
     Board(double width, double height, int numOfBoids)
     {
         this.width = width;
@@ -25,7 +26,7 @@ class Board
         }
     }
 
-    Point getScare()
+    Vector getScare()
     {
         return scare;
     }
