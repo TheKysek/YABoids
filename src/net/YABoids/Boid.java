@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 class Boid
 {
-    private static final double VIEW_DISTANCE = 80;
+    private static final double VIEW_DISTANCE = 70;
 
-    private static final double MAX_VELOCITY = 5;
+    private static final double MAX_VELOCITY = 4.8;
 
     private static final double PRESERVE_PREVIOUS_VELOCITY_MULTIPLIER = 1;
 

@@ -4,6 +4,8 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,7 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import net.YABoids.geometry.Vector;
 
 public class YABoids extends Application
 {
@@ -36,7 +41,8 @@ public class YABoids extends Application
 
     public void init()
     {
-        board = new Board(1800, 960, 100);
+        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+        board = new Board(bounds.getWidth() * 0.9, bounds.getHeight() * 0.9, 100);
     }
 
     @Override
@@ -62,7 +68,7 @@ public class YABoids extends Application
 
         drawBoids();
 
-        //primaryStage.setResizable(false);
+        primaryStage.setResizable(false);
 
         // Workaround, see: https://stackoverflow.com/questions/20732100/javafx-why-does-stage-setresizablefalse-cause-additional-margins
         primaryStage.sizeToScene();
@@ -81,12 +87,14 @@ public class YABoids extends Application
                 }
 
                 //System.out.println(now - then);
-                then = now;
 
                 if (running)
                 {
                     tick();
                 }
+                gc.setFill(Color.BLACK);
+                gc.fillText(String.valueOf(1000000000 / (now - then)), 15, 10);
+                then = now;
             }
         }.start();
 
@@ -110,43 +118,45 @@ public class YABoids extends Application
 
     }
 
-    private void drawBoids()
-    {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        board.getBoids().forEach(this::drawBoid);
-
-        gc.setFill(Color.RED);
-        gc.fillOval(board.getScare().getX() - 10, board.getScare().getY() - 10, 20, 20);
-    }
-
     private void initCanvas()
     {
         canvas = new Canvas(board.getWidth(), board.getHeight());
 
-        canvas.setOnMouseMoved(event -> {
-            board.getScare().set(event.getX(), event.getY());
-        });
+        canvas.setOnMouseMoved(event -> board.getScare().set(event.getX(), event.getY()));
 
         gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
+
+        gc.setFill(Color.LINEN);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        gc.setFont(new Font(20));
+        gc.setTextBaseline(VPos.TOP);
+    }
+
+    private void drawBoids()
+    {
+        gc.setFill(Color.LINEN);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        board.getBoids().forEach(this::drawBoid);
+
+        gc.setFill(Color.LIGHTBLUE);
+        gc.fillOval(board.getScare().getX() - 10, board.getScare().getY() - 10, 20, 20);
     }
 
     private void drawBoid(Boid boid)
     {
-        gc.setFill(Color.GREEN);
+        gc.setFill(Color.THISTLE);
         gc.fillOval(boid.getX() - 10, boid.getY() - 10, 20, 20);
+
+        gc.setFill(Color.MEDIUMPURPLE);
+        Vector velocity = boid.getVelocity();
+        gc.fillOval(boid.getX() +  2 * velocity.getLength() * Math.cos(velocity.getRotationRad()) - 3, boid.getY() +  2 * velocity.getLength() * Math.sin(velocity.getRotationRad()) - 3, 6, 6);
     }
 
     private void tick()
     {
-        long start = System.currentTimeMillis();
         board.moveBoids();
         drawBoids();
-        System.out.println(System.currentTimeMillis() - start);
     }
 
 }
