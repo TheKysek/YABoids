@@ -133,10 +133,30 @@ public class YABoids extends Application
         gc.setTextBaseline(VPos.TOP);
     }
 
+    private void drawGrid()
+    {
+        gc.setStroke(Color.LIGHTGRAY);
+
+        for (int i = 0; i <= board.cellsVertically; i++)
+        {
+            double y = i * Boid.VIEW_DISTANCE;
+            gc.strokeLine(0, y, board.width, y);
+        }
+
+        for (int i = 0; i <= board.cellsHorizontally; i++)
+        {
+            double x = i * Boid.VIEW_DISTANCE;
+            gc.strokeLine(x, 0, x, board.height);
+        }
+    }
+
     private void drawBoids()
     {
         gc.setFill(Color.LINEN);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        drawGrid();
+
         board.getBoids().forEach(this::drawBoid);
 
         gc.setFill(Color.LIGHTBLUE);

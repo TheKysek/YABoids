@@ -17,19 +17,19 @@ class Board
 
     private Vector scare = new Vector();
 
-    private double width;
-    private double height;
+    double width;
+    double height;
 
-    private int cellsVertically;
-    private int cellsHorizontally;
+    int cellsHorizontally;
+    int cellsVertically;
 
     Board(double width, double height, int numOfBoids)
     {
         this.width = width;
         this.height = height;
 
-        this.cellsVertically = (int) Math.ceil(width / Boid.VIEW_DISTANCE);
-        this.cellsHorizontally = (int) Math.ceil(height / Boid.VIEW_DISTANCE);
+        this.cellsHorizontally = (int) Math.ceil(width / Boid.VIEW_DISTANCE);
+        this.cellsVertically = (int) Math.ceil(height / Boid.VIEW_DISTANCE);
 
         initGrid();
 
@@ -41,15 +41,15 @@ class Board
         }
     }
 
-    void initGrid()
+    private void initGrid()
     {
         this.grid = new ArrayList<>();
 
-        for (int i = 0; i < cellsVertically; i++)
+        for (int i = 0; i < cellsHorizontally; i++)
         {
             grid.add(new ArrayList<>());
 
-            for (int j = 0; j < cellsHorizontally; j++)
+            for (int j = 0; j < cellsVertically; j++)
             {
                 grid.get(i).add(new HashSet<>());
             }
@@ -120,7 +120,7 @@ class Board
         }
     }
 
-    Set<Boid> getFromCell(int x, int y)
+    private Set<Boid> getFromCell(int x, int y)
     {
         if (cellInBounds(x, y))
         {
@@ -131,12 +131,12 @@ class Board
         }
     }
 
-    boolean cellInBounds(int x, int y)
+    private boolean cellInBounds(int x, int y)
     {
-        return !(x < 0 || y < 0 || x >= cellsVertically || y >= cellsHorizontally);
+        return !(x < 0 || y < 0 || x >= cellsHorizontally || y >= cellsVertically);
     }
 
-    void clearGrid()
+    private void clearGrid()
     {
         for (ArrayList<Set<Boid>> column : grid)
         {
@@ -144,7 +144,7 @@ class Board
         }
     }
 
-    void updateGrid()
+    private void updateGrid()
     {
         clearGrid();
 
@@ -161,7 +161,7 @@ class Board
         }
     }
 
-    void addBoid(Boid boid)
+    private void addBoid(Boid boid)
     {
         boids.add(boid);
     }
