@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 class Boid
 {
-    private static final double VIEW_DISTANCE = 70;
+    static final double VIEW_DISTANCE = 70;
 
     private static final double MAX_VELOCITY = 4.8;
 
@@ -25,23 +25,21 @@ class Boid
 
     private static final double CENTER_OF_MASS_MULTIPLIER = 0.015;
 
-    private static final double JIGGLE_MULTIPLIER = 1.4;
-    private static final double JIGGLE_PROBABILITY = 0.3;
+    private static final double JIGGLE_MULTIPLIER = 0.5;
+    private static final double JIGGLE_PROBABILITY = 0.5;
 
     private double x, y;
 
-    private Set<Boid> boids;
-    private Set<Boid> boidsNearby;
+    private Set<Boid> boidsInViewDistance;
 
     private Vector scare;
 
     private Vector velocity;
 
-    Boid(double x, double y, Set<Boid> boids, Vector scare)
+    Boid(double x, double y, Vector scare)
     {
         this.x = x;
         this.y = y;
-        this.boids = boids;
         this.scare = scare;
 
         velocity = new Vector();
@@ -49,16 +47,16 @@ class Boid
 
     private double distance(Boid boid)
     {
-        double dx = getX() - boid.getX();
-        double dy = getY() - boid.getY();
+        double dx = x - boid.getX();
+        double dy = y - boid.getY();
 
         return Math.sqrt(dx * dx + dy * dy);
     }
 
     private double distance(Vector point)
     {
-        double dx = getX() - point.getX();
-        double dy = getY() - point.getY();
+        double dx = x - point.getX();
+        double dy = y - point.getY();
 
         return Math.sqrt(dx * dx + dy * dy);
     }
@@ -84,16 +82,16 @@ class Boid
 
     private void applyAlign()
     {
-        if (boidsNearby.size() > 0)
+        if (boidsInViewDistance.size() > 0)
         {
             Vector align = new Vector();
 
-            for (Boid boid : boidsNearby)
+            for (Boid boid : boidsInViewDistance)
             {
                 align.add(boid.getVelocity());
             }
 
-            align.scale(1.0 / boidsNearby.size());
+            align.scale(1.0 / boidsInViewDistance.size());
 
             align.scale(ALIGN_MULTIPLIER);
 
@@ -103,21 +101,21 @@ class Boid
 
     private void applyCenterOfMass()
     {
-        if (boidsNearby.size() > 0)
+        if (boidsInViewDistance.size() > 0)
         {
 
             double cx = 0;
             double cy = 0;
 
-            for (Boid boid : boidsNearby)
+            for (Boid boid : boidsInViewDistance)
             {
                 cx += boid.getX();
                 cy += boid.getY();
             }
 
 
-            cx = cx / boidsNearby.size();
-            cy = cy / boidsNearby.size();
+            cx = cx / boidsInViewDistance.size();
+            cy = cy / boidsInViewDistance.size();
 
             Vector toCenter = new Vector(cx - x, cy - y);
 
@@ -129,11 +127,11 @@ class Boid
 
     private void applyCollisionAvoidance()
     {
-        if (boidsNearby.size() > 0)
+        if (boidsInViewDistance.size() > 0)
         {
             Vector avoid = new Vector();
 
-            boidsNearby.stream().filter(boid -> distance(boid) < COLLISION_AVOIDANCE_RADIUS).forEach(boid -> {
+            boidsInViewDistance.stream().filter(boid -> distance(boid) < COLLISION_AVOIDANCE_RADIUS).forEach(boid -> {
                 Vector avoidBoid = new Vector(x - boid.getX(), y - boid.getY());
                 avoidBoid.scale((COLLISION_AVOIDANCE_RADIUS - distance(boid)) / COLLISION_AVOIDANCE_RADIUS);
                 avoid.add(avoidBoid);
@@ -161,13 +159,11 @@ class Boid
         }
     }
 
-    void move()
+    void move(Set<Boid> boidsNearby)
     {
-        boidsNearby = new HashSet<>();
+        boidsInViewDistance = new HashSet<>();
 
-        //System.out.println(boids.size());
-
-        boidsNearby.addAll(boids.stream().filter(boid -> boid != this && distance(boid) < VIEW_DISTANCE).collect(Collectors.toList()));
+        boidsInViewDistance.addAll(boidsNearby.stream().filter(boid -> boid != this && distance(boid) < VIEW_DISTANCE).collect(Collectors.toList()));
 
         velocity.scale(PRESERVE_PREVIOUS_VELOCITY_MULTIPLIER);
 
@@ -181,8 +177,6 @@ class Boid
 
         x += velocity.getX();
         y += velocity.getY();
-
-        //System.out.println("(" + x + ", " + y + ")");
     }
 
     Vector getVelocity()
