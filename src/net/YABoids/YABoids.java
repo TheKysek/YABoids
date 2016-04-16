@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,6 +23,7 @@ import net.YABoids.geometry.Vector;
 public class YABoids extends Application
 {
     private boolean running = true;
+    private boolean draw_fps = false;
 
     private long then;
 
@@ -57,10 +59,9 @@ public class YABoids extends Application
         primaryStage.setTitle("YABoids");
 
         initCanvas();
-        //initToolbar();
+        initToolbar();
 
-        HBox root = new HBox(0, canvas);
-        root.setStyle("-fx-background-color: #FF00FF;");
+        HBox root = new HBox(0, canvas, toolbar);
 
         Scene primaryScene = new Scene(root);
 
@@ -86,15 +87,18 @@ public class YABoids extends Application
                     return;
                 }
 
-                //System.out.println(now - then);
-
                 if (running)
                 {
                     tick();
+                    if (draw_fps)
+                    {
+                        gc.setFill(Color.BLACK);
+                        gc.fillText(String.valueOf(1000000000 / (now - then)), 15, 10);
+                        then = now;
+                    }
                 }
-                gc.setFill(Color.BLACK);
-                gc.fillText(String.valueOf(1000000000 / (now - then)), 15, 10);
-                then = now;
+
+
             }
         }.start();
 
@@ -106,15 +110,26 @@ public class YABoids extends Application
 
         toolbar.setPadding(new Insets(20));
         toolbar.setAlignment(Pos.TOP_CENTER);
-        toolbar.setPrefWidth(250);
-        toolbar.setStyle("-fx-background-color: #EEEEEE;");
 
-        Button b_tick = new Button("tick()");
-        b_tick.setOnAction(event -> tick());
-        toolbar.getChildren().add(b_tick);
+        Button b_tick = new Button("Pause");
 
-        toolbar.getChildren().add(new Label("Test!"));
-        toolbar.getChildren().add(new Label("Test!"));
+        CheckBox checkBox_fps = new CheckBox("Draw FPS");
+
+        b_tick.setOnAction(event -> {
+            if (running)
+            {
+                running = false;
+                b_tick.setText("Start");
+            } else
+            {
+                running = true;
+                b_tick.setText("Pause");
+            }
+        });
+
+        checkBox_fps.setOnAction(event -> draw_fps = checkBox_fps.isSelected());
+
+        toolbar.getChildren().addAll(b_tick, checkBox_fps);
 
     }
 
@@ -170,7 +185,7 @@ public class YABoids extends Application
 
         gc.setFill(Color.MEDIUMPURPLE);
         Vector velocity = boid.getVelocity();
-        gc.fillOval(boid.getX() +  2 * velocity.getLength() * Math.cos(velocity.getRotationRad()) - 3, boid.getY() +  2 * velocity.getLength() * Math.sin(velocity.getRotationRad()) - 3, 6, 6);
+        gc.fillOval(boid.getX() + 2 * velocity.getLength() * Math.cos(velocity.getRotationRad()) - 3, boid.getY() + 2 * velocity.getLength() * Math.sin(velocity.getRotationRad()) - 3, 6, 6);
     }
 
     private void tick()

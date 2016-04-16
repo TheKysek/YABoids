@@ -18,12 +18,12 @@ class Boid
 
     private static final double COLLISION_AVOIDANCE_MULTIPLIER = 0.15;
 
-    private static final double ALIGN_MULTIPLIER = 0.12;
+    private static final double ALIGN_MULTIPLIER = 0.6;
 
-    private static final double SCARE_MULTIPLIER = 1;
+    private static final double SCARE_MULTIPLIER = 0.8;
     //private static final double TARGET_MULTIPLIER = 0;
 
-    private static final double CENTER_OF_MASS_MULTIPLIER = 0.015;
+    private static final double CENTER_OF_MASS_MULTIPLIER = 0.45;
 
     private static final double JIGGLE_MULTIPLIER = 0.5;
     private static final double JIGGLE_PROBABILITY = 0.5;
@@ -41,8 +41,7 @@ class Boid
         this.x = x;
         this.y = y;
         this.scare = scare;
-
-        velocity = new Vector();
+        this.velocity = new Vector();
     }
 
     private double distance(Boid boid)
@@ -75,7 +74,7 @@ class Boid
     {
         if (Math.random() < JIGGLE_PROBABILITY)
         {
-            // -0.5 to also get negative numbers
+            // Subtracting 0.5 to also get negative numbers
             velocity.add((Math.random() - 0.5) * JIGGLE_MULTIPLIER, (Math.random() - 0.5) * JIGGLE_MULTIPLIER);
         }
     }
@@ -91,7 +90,7 @@ class Boid
                 align.add(boid.getVelocity());
             }
 
-            align.scale(1.0 / boidsInViewDistance.size());
+            align.normalize();
 
             align.scale(ALIGN_MULTIPLIER);
 
@@ -113,12 +112,12 @@ class Boid
                 cy += boid.getY();
             }
 
-
             cx = cx / boidsInViewDistance.size();
             cy = cy / boidsInViewDistance.size();
 
             Vector toCenter = new Vector(cx - x, cy - y);
 
+            toCenter.normalize();
             toCenter.scale(CENTER_OF_MASS_MULTIPLIER);
 
             velocity.add(toCenter);
@@ -141,7 +140,6 @@ class Boid
 
             velocity.add(avoid);
 
-
         }
     }
 
@@ -153,17 +151,24 @@ class Boid
             double dy = y - scare.getY();
 
             Vector away = new Vector(dx, dy);
+            away.normalize();
+            away.scale(VIEW_DISTANCE / distance(scare));
             away.scale(SCARE_MULTIPLIER);
 
             velocity.add(away);
         }
     }
 
+    /**
+     * Moves the boid
+     *
+     * @param boidsNearby Set of boids to move according to
+     */
     void move(Set<Boid> boidsNearby)
     {
         boidsInViewDistance = new HashSet<>();
 
-        boidsInViewDistance.addAll(boidsNearby.stream().filter(boid -> boid != this && distance(boid) < VIEW_DISTANCE).collect(Collectors.toList()));
+        boidsInViewDistance.addAll(boidsNearby.stream().filter(boid -> boid != this && distance(boid) < VIEW_DISTANCE).collect(Collectors.toSet()));
 
         velocity.scale(PRESERVE_PREVIOUS_VELOCITY_MULTIPLIER);
 

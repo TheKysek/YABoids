@@ -33,8 +33,6 @@ class Board
 
         initGrid();
 
-        //System.out.println(ce);
-
         for (int i = 0; i < numOfBoids; i++)
         {
             addBoid(new Boid(getWidth() * Math.random(), getHeight() * Math.random(), getScare()));

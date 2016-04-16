@@ -17,6 +17,11 @@ public class Vector
         y = 0;
     }
 
+    public String toString()
+    {
+        return "[Vector] length: " + getLength() + ", x: " + x + ", y: " + y;
+    }
+
     public void add(Vector vector)
     {
         x += vector.getX();
@@ -62,6 +67,14 @@ public class Vector
         if (getLength() > maxLength)
         {
             scale(maxLength / getLength());
+        }
+    }
+
+    public void normalize()
+    {
+        if (getLength() > 0)
+        {
+            scale(1 / getLength());
         }
     }
 
