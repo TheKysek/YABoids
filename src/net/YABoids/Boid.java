@@ -16,7 +16,7 @@ class Boid
 
     private static final double COLLISION_AVOIDANCE_RADIUS = 35;
 
-    private static final double COLLISION_AVOIDANCE_MULTIPLIER = 0.15;
+    private static final double COLLISION_AVOIDANCE_MULTIPLIER = 0.8;
 
     private static final double ALIGN_MULTIPLIER = 0.6;
 
@@ -132,7 +132,8 @@ class Boid
 
             boidsInViewDistance.stream().filter(boid -> distance(boid) < COLLISION_AVOIDANCE_RADIUS).forEach(boid -> {
                 Vector avoidBoid = new Vector(x - boid.getX(), y - boid.getY());
-                avoidBoid.scale((COLLISION_AVOIDANCE_RADIUS - distance(boid)) / COLLISION_AVOIDANCE_RADIUS);
+                avoidBoid.normalize();
+                avoidBoid.scale(COLLISION_AVOIDANCE_RADIUS / distance(boid));
                 avoid.add(avoidBoid);
             });
 
@@ -152,6 +153,7 @@ class Boid
 
             Vector away = new Vector(dx, dy);
             away.normalize();
+
             away.scale(VIEW_DISTANCE / distance(scare));
             away.scale(SCARE_MULTIPLIER);
 
