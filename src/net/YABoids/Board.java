@@ -10,20 +10,15 @@ class Board
 {
     private static final double MARGIN = 20;
     private static final double REPEL_FORCE = 2;
-
-    private ArrayList<ArrayList<Set<Boid>>> grid;
-
-    private Set<Boid> boids = new HashSet<>();
-
-    private Vector scare = new Vector();
-
     double width;
     double height;
-
     int cellsHorizontally;
     int cellsVertically;
+    private ArrayList<ArrayList<Set<Boid>>> grid;
+    private Set<Boid> boids = new HashSet<>();
+    private Vector scare = new Vector();
 
-    Board(double width, double height, int numOfBoids)
+    Board(double width, double height)
     {
         this.width = width;
         this.height = height;
@@ -32,7 +27,10 @@ class Board
         this.cellsVertically = (int) Math.ceil(height / Boid.VIEW_DISTANCE);
 
         initGrid();
+    }
 
+    void addRandomBoids(int numOfBoids)
+    {
         for (int i = 0; i < numOfBoids; i++)
         {
             addBoid(new Boid(getWidth() * Math.random(), getHeight() * Math.random(), getScare()));
@@ -77,7 +75,6 @@ class Board
     void moveBoids()
     {
         updateGrid();
-
 
         for (Boid boid : boids)
         {
@@ -131,7 +128,7 @@ class Board
 
     private boolean cellInBounds(int x, int y)
     {
-        return !(x < 0 || y < 0 || x >= cellsHorizontally || y >= cellsVertically);
+        return x >= 0 && y >= 0 && x < cellsHorizontally && y < cellsVertically;
     }
 
     private void clearGrid()
