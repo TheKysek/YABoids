@@ -44,7 +44,8 @@ public class YABoids extends Application
     public void init()
     {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        board = new Board(bounds.getWidth() * 0.9, bounds.getHeight() * 0.9, 800);
+        board = new Board(bounds.getWidth() * 0.9, bounds.getHeight() * 0.9);
+        board.addRandomBoids(120);
     }
 
     @Override
