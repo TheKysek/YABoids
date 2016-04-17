@@ -11,7 +11,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -24,6 +23,7 @@ public class YABoids extends Application
 {
     private boolean running = true;
     private boolean draw_fps = false;
+    private boolean draw_grid = true;
 
     private long then;
 
@@ -44,7 +44,7 @@ public class YABoids extends Application
     public void init()
     {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        board = new Board(bounds.getWidth() * 0.9, bounds.getHeight() * 0.9, 150);
+        board = new Board(bounds.getWidth() * 0.9, bounds.getHeight() * 0.9, 800);
     }
 
     @Override
@@ -114,6 +114,10 @@ public class YABoids extends Application
         Button b_tick = new Button("Pause");
 
         CheckBox checkBox_fps = new CheckBox("Draw FPS");
+        checkBox_fps.setSelected(draw_fps);
+
+        CheckBox checkBox_grid = new CheckBox("Draw Grid");
+        checkBox_grid.setSelected(draw_grid);
 
         b_tick.setOnAction(event -> {
             if (running)
@@ -128,8 +132,9 @@ public class YABoids extends Application
         });
 
         checkBox_fps.setOnAction(event -> draw_fps = checkBox_fps.isSelected());
+        checkBox_grid.setOnAction(event -> draw_grid = checkBox_grid.isSelected());
 
-        toolbar.getChildren().addAll(b_tick, checkBox_fps);
+        toolbar.getChildren().addAll(b_tick, checkBox_fps, checkBox_grid);
 
     }
 
@@ -170,7 +175,10 @@ public class YABoids extends Application
         gc.setFill(Color.LINEN);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        drawGrid();
+        if (draw_grid)
+        {
+            drawGrid();
+        }
 
         board.getBoids().forEach(this::drawBoid);
 
